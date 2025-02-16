@@ -1,1 +1,18 @@
-spring.application.name=java-spring-boot-web3-demo
+spring:
+  application:
+    name: crypto-wallet
+  datasource:
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.schema}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+db:
+  host: localhost
+  port: 5432
+  schema: mydatabase
+  username: myuser
+  password: secret
