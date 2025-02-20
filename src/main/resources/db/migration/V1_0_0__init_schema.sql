@@ -1,4 +1,4 @@
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id            SERIAL PRIMARY KEY,
     username      VARCHAR(255) NOT NULL UNIQUE,
@@ -8,21 +8,25 @@ CREATE TABLE users
     updated_at    TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-CREATE TABLE wallets
+CREATE TABLE IF NOT EXISTS wallets
 (
-    id             SERIAL PRIMARY KEY,
-    user_id        INTEGER      NOT NULL,
-    wallet_name    VARCHAR(255),
-    public_address VARCHAR(255) NOT NULL UNIQUE,
-    encrypted_seed TEXT,
-    created_at     TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    updated_at     TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    id                    SERIAL PRIMARY KEY,
+    user_id               INTEGER        NOT NULL,
+    wallet_name           VARCHAR(255),
+    cryptocurrency        VARCHAR(255)   NOT NULL,
+    public_address        VARCHAR(255)   NOT NULL UNIQUE,
+    encrypted_seed        TEXT,
+    encrypted_wallet_data TEXT,
+    available_balance     NUMERIC(20, 8) NOT NULL  DEFAULT 0,
+    unconfirmed_balance   NUMERIC(20, 8) NOT NULL  DEFAULT 0,
+    created_at            TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    updated_at            TIMESTAMP WITH TIME ZONE DEFAULT now(),
     CONSTRAINT fk_wallet_user FOREIGN KEY (user_id)
         REFERENCES users (id)
         ON DELETE CASCADE
 );
 
-CREATE TABLE transactions
+CREATE TABLE IF NOT EXISTS transactions
 (
     id               SERIAL PRIMARY KEY,
     wallet_id        INTEGER        NOT NULL,
@@ -41,13 +45,18 @@ CREATE TABLE transactions
         ON DELETE CASCADE
 );
 
-CREATE TABLE balances
+
+CREATE TABLE IF NOT EXISTS user_sessions
 (
-    wallet_id           INTEGER PRIMARY KEY,
-    available_balance   NUMERIC(20, 8) NOT NULL  DEFAULT 0,
-    unconfirmed_balance NUMERIC(20, 8) NOT NULL  DEFAULT 0,
-    updated_at          TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    CONSTRAINT fk_balance_wallet FOREIGN KEY (wallet_id)
-        REFERENCES wallets (id)
-        ON DELETE CASCADE
+    id               SERIAL PRIMARY KEY,
+    created_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id          INTEGER  NOT NULL,
+    token            VARCHAR(255),
+    token_issue_at   TIMESTAMP,
+    token_expire_at  TIMESTAMP,
+    token_revoked_at TIMESTAMP,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_user_session_user_id ON user_sessions (user_id);
