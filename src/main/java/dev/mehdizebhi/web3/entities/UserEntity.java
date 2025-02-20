@@ -3,21 +3,23 @@ package dev.mehdizebhi.web3.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@EntityListeners(AuditingEntityListener.class)
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ColumnDefault("nextval('users_id_seq')")
@@ -39,12 +41,12 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @ColumnDefault("now()")
     @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+    @CreatedDate
+    private Instant createdAt;
 
-    @ColumnDefault("now()")
     @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    @LastModifiedDate
+    private Instant updatedAt;
 
 }

@@ -4,25 +4,28 @@ import dev.mehdizebhi.web3.constants.Cryptocurrency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.OffsetDateTime;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "wallets")
-@Data
+@Setter
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Wallet {
+@EntityListeners(AuditingEntityListener.class)
+public class WalletEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ColumnDefault("nextval('wallets_id_seq')")
@@ -33,7 +36,7 @@ public class Wallet {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @Size(max = 255)
     @Column(name = "wallet_name")
@@ -47,24 +50,37 @@ public class Wallet {
     @Column(name = "encrypted_seed", length = Integer.MAX_VALUE)
     private String encryptedSeed;
 
-    @ColumnDefault("now()")
-    @Column(name = "created_at")
-    private OffsetDateTime createdAt;
+    @Column(name = "encrypted_wallet_data", length = Integer.MAX_VALUE)
+    private String encryptedWalletData;
 
-    @ColumnDefault("now()")
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
+    @OneToMany(mappedBy = "wallet", cascade = {CascadeType.PERSIST})
+    private Set<TransactionEntity> transactionEntities = new LinkedHashSet<>();
 
-    @OneToOne
-    private Balance balance;
-
-    @OneToMany(mappedBy = "wallet")
-    private Set<Transaction> transactions = new LinkedHashSet<>();
-
-    @Size(max = 255)
     @NotNull
     @Column(name = "cryptocurrency", nullable = false)
     @Enumerated(EnumType.STRING)
     private Cryptocurrency cryptocurrency;
+
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "available_balance", nullable = false, precision = 20, scale = 8)
+    private BigDecimal availableBalance;
+
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "unconfirmed_balance", nullable = false, precision = 20, scale = 8)
+    private BigDecimal unconfirmedBalance;
+
+    @Column(name = "created_at")
+    @CreatedDate
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private Instant updatedAt;
+
+    public void addTransaction(TransactionEntity transactionEntity) {
+        transactionEntities.add(transactionEntity);
+    }
 
 }
