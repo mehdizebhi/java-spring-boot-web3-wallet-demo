@@ -1,4 +1,4 @@
-package dev.mehdizebhi.web3.events;
+package dev.mehdizebhi.web3.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

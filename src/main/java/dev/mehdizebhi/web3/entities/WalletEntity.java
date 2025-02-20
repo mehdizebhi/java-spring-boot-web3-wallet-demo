@@ -1,5 +1,6 @@
-package dev.mehdizebhi.web3.events;
+package dev.mehdizebhi.web3.entities;
 
+import dev.mehdizebhi.web3.constants.Cryptocurrency;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -60,76 +61,10 @@ public class Wallet {
     @OneToMany(mappedBy = "wallet")
     private Set<Transaction> transactions = new LinkedHashSet<>();
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getWalletName() {
-        return walletName;
-    }
-
-    public void setWalletName(String walletName) {
-        this.walletName = walletName;
-    }
-
-    public String getPublicAddress() {
-        return publicAddress;
-    }
-
-    public void setPublicAddress(String publicAddress) {
-        this.publicAddress = publicAddress;
-    }
-
-    public String getEncryptedSeed() {
-        return encryptedSeed;
-    }
-
-    public void setEncryptedSeed(String encryptedSeed) {
-        this.encryptedSeed = encryptedSeed;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Balance getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Balance balance) {
-        this.balance = balance;
-    }
-
-    public Set<Transaction> getTransactions() {
-        return transactions;
-    }
-
-    public void setTransactions(Set<Transaction> transactions) {
-        this.transactions = transactions;
-    }
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "cryptocurrency", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Cryptocurrency cryptocurrency;
 
 }
