@@ -1,6 +1,11 @@
 spring:
   application:
     name: crypto-wallet
+  profiles:
+    active: dev
+  threads:
+    virtual:
+      enabled: true
   datasource:
     url: jdbc:postgresql://${db.host}:${db.port}/${db.schema}
     username: ${db.username}
@@ -16,3 +21,11 @@ db:
   schema: mydatabase
   username: myuser
   password: secret
+
+logging:
+  file:
+    name: ./log/spring.log
+
+app:
+  secret-key: "your-secret-key"
+  jwt-secret-key: "your-jwt-secret"
